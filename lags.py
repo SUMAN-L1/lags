@@ -4,13 +4,22 @@ import numpy as np
 import statsmodels.api as sm
 from statsmodels.tsa.api import VAR
 from statsmodels.tools.eval_measures import aic, bic, hqic
+from io import StringIO
 
 def load_data(uploaded_file):
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        return df
-    else:
+    try:
+        if uploaded_file.name.endswith('.csv'):
+            df = pd.read_csv(uploaded_file, encoding='utf-8')
+        elif uploaded_file.name.endswith('.xlsx'):
+            df = pd.read_excel(uploaded_file, engine='openpyxl')
+        else:
+            st.error("Unsupported file format. Please upload a CSV or XLSX file.")
+            return None
+    except Exception as e:
+        st.error(f"Error loading file: {e}")
         return None
+    
+    return df
 
 def find_optimal_lags(df, max_lags=5):
     model = VAR(df)
@@ -32,7 +41,7 @@ def find_optimal_lags(df, max_lags=5):
 def main():
     st.title('Optimal Lag Selection for Time Series Data')
     
-    uploaded_file = st.file_uploader("Upload a CSV file with time series data", type=["xlsx","csv"])
+    uploaded_file = st.file_uploader("Upload a CSV or XLSX file with time series data", type=["csv", "xlsx"])
     
     if uploaded_file:
         df = load_data(uploaded_file)
