@@ -32,7 +32,7 @@ def find_optimal_lags(df, max_lags=5):
 def main():
     st.title('Optimal Lag Selection for Time Series Data')
     
-    uploaded_file = st.file_uploader("Upload a CSV file with time series data", type="csv")
+    uploaded_file = st.file_uploader("Upload a CSV file with time series data", type=["xlsx","csv"])
     
     if uploaded_file:
         df = load_data(uploaded_file)
